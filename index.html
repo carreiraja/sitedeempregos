@@ -6,6 +6,7 @@
 <title>Aprovado — Vagas de emprego e concursos públicos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg: #F5F6FA;
@@ -138,6 +139,36 @@
     .grid-cards{grid-template-columns:1fr;}
     .planos-wrap{padding:30px 20px;}
   }
+
+  /* LOGIN MODAL */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(13,14,20,.55);
+    z-index:100; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--card); border-radius:16px; padding:34px; width:100%; max-width:400px;
+    box-shadow:0 24px 60px rgba(0,0,0,.25);
+  }
+  .modal-close{float:right; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-soft); line-height:1;}
+  .modal-title{font-family:var(--display); font-weight:700; font-size:1.3rem; margin-bottom:4px;}
+  .modal-sub{font-size:.85rem; color:var(--ink-soft); margin-bottom:22px;}
+  .role-toggle{display:flex; gap:8px; margin-bottom:20px; background:var(--bg-alt); padding:4px; border-radius:10px;}
+  .role-btn{flex:1; border:none; background:none; padding:9px; border-radius:8px; font-family:var(--body); font-weight:600; font-size:.85rem; color:var(--ink-soft); cursor:pointer;}
+  .role-btn.active{background:var(--card); color:var(--ink); box-shadow:0 2px 6px rgba(0,0,0,.08);}
+  .field-label{font-size:.8rem; font-weight:600; margin-bottom:6px; display:block; color:var(--ink-soft);}
+  .field-input{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:8px; font-family:var(--body); font-size:.92rem; margin-bottom:16px;}
+  .field-input:focus{outline:none; border-color:var(--accent);}
+  .modal-submit{width:100%; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:13px; font-family:var(--body); font-weight:600; font-size:.9rem; cursor:pointer; margin-top:4px;}
+  .modal-submit:hover{background:#4038c9;}
+  .modal-switch{text-align:center; font-size:.84rem; color:var(--ink-soft); margin-top:16px;}
+  .modal-switch button{background:none; border:none; color:var(--accent); font-weight:600; cursor:pointer; font-family:var(--body); font-size:.84rem;}
+  .modal-msg{font-size:.82rem; padding:10px 12px; border-radius:8px; margin-bottom:16px; display:none;}
+  .modal-msg.show{display:block;}
+  .modal-msg.error{background:#FBEAE9; color:var(--warn);}
+  .modal-msg.ok{background:var(--public-soft); color:var(--public);}
+  .user-chip{display:flex; align-items:center; gap:8px; font-size:.85rem; font-weight:600;}
+  .user-chip .avatar{width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700;}
 </style>
 </head>
 <body>
@@ -150,8 +181,8 @@
       <a href="#concursos">Concursos</a>
       <a href="#planos">Planos</a>
     </nav>
-    <div class="nav-actions">
-      <a href="#" class="btn btn-ghost">Entrar</a>
+    <div class="nav-actions" id="nav-actions">
+      <button class="btn btn-ghost" onclick="abrirModal('candidato')">Entrar</button>
       <a href="#planos" class="btn btn-primary">Publicar vaga</a>
     </div>
   </div>
@@ -259,6 +290,34 @@
   </div>
 </footer>
 
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModal()">✕</button>
+    <div class="modal-title" id="modal-title">Entrar</div>
+    <div class="modal-sub" id="modal-sub">Acesse sua conta para continuar.</div>
+
+    <div class="role-toggle">
+      <button class="role-btn active" id="role-candidato" onclick="setRole('candidato')">Sou candidato</button>
+      <button class="role-btn" id="role-empresa" onclick="setRole('empresa')">Sou empresa</button>
+    </div>
+
+    <div class="modal-msg" id="modal-msg"></div>
+
+    <form onsubmit="return false;">
+      <label class="field-label">E-mail</label>
+      <input type="email" class="field-input" id="input-email" placeholder="voce@email.com">
+      <label class="field-label">Senha</label>
+      <input type="password" class="field-input" id="input-senha" placeholder="mínimo 6 caracteres">
+      <button class="modal-submit" id="modal-submit-btn" onclick="enviarFormulario()">Entrar</button>
+    </form>
+
+    <div class="modal-switch">
+      <span id="modal-switch-text">Ainda não tem conta?</span>
+      <button onclick="alternarModo()" id="modal-switch-btn">Criar conta</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* =========================================================================
    DADOS
@@ -355,28 +414,164 @@ function buscar(){
   // uma query .ilike() no banco em vez de filtrar o array em memória.
 }
 
-renderVagas();
-renderConcursos();
-renderTicker();
-
 /* =========================================================================
-   PRÓXIMO PASSO: SUPABASE (banco de dados gratuito)
-   Quando você criar seu projeto em supabase.com, troque o bloco acima por:
-
-   const SUPABASE_URL = "https://SEU-PROJETO.supabase.co";
-   const SUPABASE_ANON_KEY = "sua-anon-key-publica"; // essa chave PODE ficar no site
-
-   async function carregarDoSupabase(){
-     const res = await fetch(`${SUPABASE_URL}/rest/v1/vagas?select=*`, {
-       headers: {
-         apikey: SUPABASE_ANON_KEY,
-         Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-       }
-     });
-     const vagas = await res.json();
-     // ...renderiza vagas normalmente
-   }
+   CONEXÃO COM SUPABASE (opcional)
+   Deixe os dois valores abaixo em branco ("") para o site funcionar com os
+   dados de amostra (VAGAS e CONCURSOS lá em cima). Quando você criar seu
+   projeto gratuito em supabase.com, cole a URL e a anon key aqui — o site
+   passa a carregar as vagas e concursos direto do banco automaticamente,
+   e se algo falhar (banco fora do ar, tabela vazia, chave errada), ele
+   volta sozinho a usar os dados de amostra em vez de mostrar a página em
+   branco.
 ========================================================================= */
+const SUPABASE_URL = "https://ipxevbpbinqbmrbaogsz.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_EblMgJXW3gZc0DhERBEomQ_rdMSC8hE";
+
+const supabaseClient = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+/* ---------------- LOGIN / CADASTRO ---------------- */
+let modalRole = 'candidato';
+let modalMode = 'login'; // ou 'cadastro'
+
+function setRole(role){
+  modalRole = role;
+  document.getElementById('role-candidato').classList.toggle('active', role === 'candidato');
+  document.getElementById('role-empresa').classList.toggle('active', role === 'empresa');
+}
+
+function abrirModal(role){
+  if(!supabaseClient){
+    alert('O login ainda não foi conectado a um banco de dados. Configure o Supabase (SUPABASE_URL e SUPABASE_ANON_KEY) primeiro.');
+    return;
+  }
+  setRole(role || 'candidato');
+  modalMode = 'login';
+  atualizarTextoModal();
+  esconderMsg();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function fecharModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function alternarModo(){
+  modalMode = (modalMode === 'login') ? 'cadastro' : 'login';
+  atualizarTextoModal();
+  esconderMsg();
+}
+
+function atualizarTextoModal(){
+  const isLogin = modalMode === 'login';
+  document.getElementById('modal-title').textContent = isLogin ? 'Entrar' : 'Criar conta';
+  document.getElementById('modal-sub').textContent = isLogin
+    ? 'Acesse sua conta para continuar.'
+    : (modalRole === 'candidato' ? 'Crie sua conta de candidato, é grátis.' : 'Crie sua conta de empresa para publicar vagas.');
+  document.getElementById('modal-submit-btn').textContent = isLogin ? 'Entrar' : 'Criar conta';
+  document.getElementById('modal-switch-text').textContent = isLogin ? 'Ainda não tem conta?' : 'Já tem conta?';
+  document.getElementById('modal-switch-btn').textContent = isLogin ? 'Criar conta' : 'Entrar';
+}
+
+function mostrarMsg(texto, tipo){
+  const el = document.getElementById('modal-msg');
+  el.textContent = texto;
+  el.className = 'modal-msg show ' + tipo;
+}
+function esconderMsg(){
+  document.getElementById('modal-msg').className = 'modal-msg';
+}
+
+async function enviarFormulario(){
+  const email = document.getElementById('input-email').value.trim();
+  const senha = document.getElementById('input-senha').value;
+  if(!email || !senha){
+    mostrarMsg('Preencha e-mail e senha.', 'error');
+    return;
+  }
+
+  try{
+    if(modalMode === 'login'){
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+      if(error) throw error;
+      mostrarMsg('Login realizado!', 'ok');
+      setTimeout(fecharModal, 700);
+    } else {
+      const { error } = await supabaseClient.auth.signUp({
+        email, password: senha,
+        options: { data: { tipo: modalRole } }
+      });
+      if(error) throw error;
+      mostrarMsg('Conta criada! Verifique seu e-mail para confirmar.', 'ok');
+    }
+  }catch(err){
+    mostrarMsg(err.message || 'Algo deu errado, tente de novo.', 'error');
+  }
+}
+
+async function sair(){
+  if(supabaseClient) await supabaseClient.auth.signOut();
+  atualizarBarraUsuario(null);
+}
+
+function atualizarBarraUsuario(session){
+  const nav = document.getElementById('nav-actions');
+  if(session && session.user){
+    const email = session.user.email;
+    const inicial = email.charAt(0).toUpperCase();
+    const tipo = session.user.user_metadata && session.user.user_metadata.tipo === 'empresa' ? 'Empresa' : 'Candidato';
+    nav.innerHTML = `
+      <div class="user-chip">
+        <span class="avatar">${inicial}</span>
+        <span>${email.split('@')[0]} · ${tipo}</span>
+      </div>
+      <button class="btn btn-ghost" onclick="sair()">Sair</button>
+      <a href="#planos" class="btn btn-primary">Publicar vaga</a>
+    `;
+  } else {
+    nav.innerHTML = `
+      <button class="btn btn-ghost" onclick="abrirModal('candidato')">Entrar</button>
+      <a href="#planos" class="btn btn-primary">Publicar vaga</a>
+    `;
+  }
+}
+
+if(supabaseClient){
+  supabaseClient.auth.getSession().then(({ data }) => atualizarBarraUsuario(data.session));
+  supabaseClient.auth.onAuthStateChange((_event, session) => atualizarBarraUsuario(session));
+}
+
+async function carregarTabela(nome){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${nome}?select=*&order=created_at.desc`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+    }
+  });
+  if(!res.ok) throw new Error('Falha ao carregar ' + nome);
+  return res.json();
+}
+
+async function init(){
+  if(SUPABASE_URL && SUPABASE_ANON_KEY){
+    try{
+      const [vagasDb, concursosDb] = await Promise.all([
+        carregarTabela('vagas'),
+        carregarTabela('concursos')
+      ]);
+      if(vagasDb.length) VAGAS.splice(0, VAGAS.length, ...vagasDb);
+      if(concursosDb.length) CONCURSOS.splice(0, CONCURSOS.length, ...concursosDb);
+    }catch(err){
+      console.warn('Não foi possível carregar do Supabase, usando dados de amostra.', err);
+    }
+  }
+  renderVagas();
+  renderConcursos();
+  renderTicker();
+}
+
+init();
 </script>
 </body>
 </html>
