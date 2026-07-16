@@ -79,6 +79,7 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.55; -webkit-font-smoothing:antialiased;}
+  .hero{background:radial-gradient(1100px 480px at 85% -10%, rgba(79,70,229,.10), transparent 60%), radial-gradient(700px 380px at -5% 15%, rgba(14,159,139,.08), transparent 55%);}
   a{color:inherit; text-decoration:none;}
   .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
@@ -140,13 +141,14 @@
   .see-all::after{content:' →';}
 
   .grid-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; transition:transform .18s, box-shadow .18s;}
-  .card:hover{transform:translateY(-3px); box-shadow:0 14px 30px rgba(18,20,28,.07);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; transition:transform .18s, box-shadow .18s, border-color .18s;}
+  .card:hover{transform:translateY(-3px); box-shadow:0 16px 34px rgba(18,20,28,.09); border-color:rgba(79,70,229,.25);}
   .card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
   .company-tag{font-family:var(--mono); font-size:.72rem; color:var(--ink-soft);}
   .badge{font-family:var(--mono); font-size:.66rem; font-weight:600; letter-spacing:.05em; padding:4px 10px; border-radius:20px; text-transform:uppercase;}
   .badge-priv{background:var(--accent-soft); color:var(--accent);}
   .badge-pub{background:var(--public-soft); color:var(--public);}
+  .badge-remoto{background:var(--public-soft); color:var(--public);}
   .card h3{font-family:var(--display); font-weight:700; font-size:1.12rem; margin-bottom:6px;}
   .card .meta{font-size:.85rem; color:var(--ink-soft); margin-bottom:14px;}
   .card .meta span{display:block; margin-bottom:2px;}
@@ -175,6 +177,7 @@
   .plan-audience.active{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
   .plan-card{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:26px;}
   .plan-card.featured{border-color:var(--accent); background:rgba(79,70,229,.16);}
+  .plan-card.featured{box-shadow:0 0 0 1px var(--accent), 0 20px 40px -12px rgba(79,70,229,.45);}
   .plan-name{font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:#8990AC; margin-bottom:10px;}
   .plan-card.featured .plan-name{color:#B4AEFB;}
   .plan-price{font-family:var(--display); font-size:2rem; font-weight:700; margin-bottom:4px;}
@@ -183,9 +186,31 @@
   .plan-list{list-style:none; margin-bottom:22px;}
   .plan-list li{font-size:.85rem; color:#DADFEE; padding:5px 0 5px 20px; position:relative;}
   .plan-list li::before{content:'✓'; position:absolute; left:0; color:var(--accent);}
-  .pay-btn{width:100%; background:#fff; color:var(--ink); border:none; border-radius:8px; padding:12px; font-family:var(--body); font-weight:600; font-size:.88rem; cursor:pointer;}
+  .pay-btn{width:100%; background:#fff; color:var(--ink); border:none; border-radius:8px; padding:12px; font-family:var(--body); font-weight:600; font-size:.88rem; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease;}
+  .pay-btn:hover{transform:translateY(-1px); box-shadow:0 8px 18px rgba(0,0,0,.18);}
   .plan-card.featured .pay-btn{background:var(--accent); color:#fff;}
   .mp-note{font-family:var(--mono); font-size:.7rem; color:#6F7690; margin-top:26px;}
+
+  /* TABELA COMPARATIVA — visão rápida dos benefícios por plano */
+  .compare-table{
+    grid-column:1 / -1; width:100%; border-collapse:collapse; margin-top:6px;
+    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.12); border-radius:14px; overflow:hidden;
+  }
+  .compare-table th, .compare-table td{padding:12px 16px; text-align:center; font-size:.85rem; border-bottom:1px solid rgba(255,255,255,.08);}
+  .compare-table th:first-child, .compare-table td:first-child{text-align:left; color:#DADFEE;}
+  .compare-table thead th{font-family:var(--display); font-weight:700; color:#fff; background:rgba(255,255,255,.04); font-size:.9rem;}
+  .compare-table thead th:not(:first-child){color:#B4AEFB;}
+  .compare-price{display:block; font-family:var(--mono); font-weight:400; font-size:.72rem; color:#8990AC; margin-top:2px;}
+  .compare-table tbody tr:last-child td{border-bottom:none;}
+  .compare-table td.ok{color:#3DDC84; font-weight:700;}
+  .compare-table td.no{color:#565D78;}
+  @media (max-width:640px){ .compare-table{font-size:.78rem;} .compare-table th, .compare-table td{padding:9px 8px;} }
+
+  /* CHIPS DE FILTRO — home office / presencial / híbrido */
+  .filter-chips{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+  .filter-chip{font-family:var(--body); font-size:.82rem; font-weight:600; color:var(--ink-soft); background:var(--card); border:1px solid var(--line); padding:8px 15px; border-radius:20px; cursor:pointer; transition:all .15s;}
+  .filter-chip:hover{border-color:var(--accent); color:var(--accent);}
+  .filter-chip.active{background:var(--accent); border-color:var(--accent); color:#fff;}
 
   footer{border-top:1px solid var(--line); padding:40px 0 30px; margin-top:30px;}
   .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
@@ -276,6 +301,7 @@
       </form>
       <div class="quick-chips">
         <a href="#vagas">💼 Vagas de emprego</a>
+        <a href="#vagas" onclick="setTimeout(()=>document.querySelector('[data-modalidade=remoto]').click(),400)">🏠 Home office</a>
         <a href="#concursos">📋 Concursos públicos</a>
         <a href="#planos">📌 Publicar vaga</a>
       </div>
@@ -295,6 +321,12 @@
         <h2>Vagas de emprego em destaque</h2>
       </div>
       <a href="#" class="see-all">Ver todas as vagas</a>
+    </div>
+    <div class="filter-chips" id="filtro-modalidade">
+      <button class="filter-chip active" data-modalidade="" onclick="filtrarVagas('', this)">Todas</button>
+      <button class="filter-chip" data-modalidade="remoto" onclick="filtrarVagas('remoto', this)">🏠 Home office</button>
+      <button class="filter-chip" data-modalidade="hibrido" onclick="filtrarVagas('hibrido', this)">Híbrido</button>
+      <button class="filter-chip" data-modalidade="presencial" onclick="filtrarVagas('presencial', this)">Presencial</button>
     </div>
     <div class="grid-cards" id="vagas-grid"></div>
   </div>
@@ -325,38 +357,55 @@
         <button class="plan-toggle active" onclick="switchAudience('candidato', this)">Para candidatos</button>
         <button class="plan-toggle" onclick="switchAudience('empresa', this)">Para empresas</button>
       </div>
+
       <div class="plan-audience active" id="plan-candidato">
         <div class="plan-card">
-          <div class="plan-name">Avulso</div>
-          <div class="plan-price">R$ 9,90</div>
-          <div class="plan-desc">Acesso ao edital completo de um concurso específico.</div>
-          <ul class="plan-list"><li>PDF completo do edital</li><li>Resumo do conteúdo programático</li><li>Pix ou cartão</li></ul>
-          <button class="pay-btn" onclick="iniciarPagamento('candidato_avulso')">Pagar com Mercado Pago</button>
+          <div class="plan-name">Básico</div>
+          <div class="plan-price">R$ 12,90<small>/mês</small></div>
+          <div class="plan-desc">Para quem busca com calma, sem pressa de decidir.</div>
+          <ul class="plan-list"><li>Vagas e concursos ilimitados</li><li>Alerta por e-mail 1x por semana</li><li>Pix, cartão ou boleto</li></ul>
+          <button class="pay-btn" onclick="iniciarPagamento('candidato_basico')">Assinar Básico</button>
         </div>
         <div class="plan-card featured">
-          <div class="plan-name">Assinatura Premium</div>
+          <div class="plan-name">✦ Premium</div>
           <div class="plan-price">R$ 24,90<small>/mês</small></div>
-          <div class="plan-desc">Acesso ilimitado a todos os editais e vagas.</div>
-          <ul class="plan-list"><li>Editais e vagas sem limite</li><li>Alerta no dia da abertura</li><li>Cancele quando quiser</li></ul>
-          <button class="pay-btn" onclick="iniciarPagamento('candidato_premium')">Assinar com Mercado Pago</button>
+          <div class="plan-desc">Para quem não pode perder a vaga certa por um dia de atraso.</div>
+          <ul class="plan-list"><li>Tudo do Básico, e mais:</li><li>Alerta no mesmo dia da abertura</li><li>Perfil em destaque para empresas</li><li>Cancele quando quiser</li></ul>
+          <button class="pay-btn" onclick="iniciarPagamento('candidato_premium')">Assinar Premium</button>
         </div>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>O que está incluso</th><th>Básico <span class="compare-price">R$ 12,90</span></th><th>Premium <span class="compare-price">R$ 24,90</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ver todas as vagas e concursos</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+            <tr><td>Alerta de novas oportunidades</td><td>1x por semana</td><td class="ok">no mesmo dia</td></tr>
+            <tr><td>Acesso ao edital / descrição completa</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+            <tr><td>Perfil em destaque para empresas</td><td class="no">—</td><td class="ok">✓</td></tr>
+            <tr><td>Selo de assinante verificado</td><td class="no">—</td><td class="ok">✓</td></tr>
+            <tr><td>Cancelamento</td><td class="ok">a qualquer momento</td><td class="ok">a qualquer momento</td></tr>
+          </tbody>
+        </table>
       </div>
+
       <div class="plan-audience" id="plan-empresa">
         <div class="plan-card">
-          <div class="plan-name">Vaga avulsa</div>
-          <div class="plan-price">R$ 89,00</div>
-          <div class="plan-desc">Publicação de uma vaga por 30 dias.</div>
-          <ul class="plan-list"><li>1 vaga ativa por 30 dias</li><li>Painel de candidatos</li><li>Pix ou cartão</li></ul>
-          <button class="pay-btn" onclick="iniciarPagamento('empresa_avulsa')">Pagar com Mercado Pago</button>
+          <div class="plan-name">Grátis</div>
+          <div class="plan-price">R$ 0<small>sempre</small></div>
+          <div class="plan-desc">Para publicar sua vaga sem custo, sem pegadinha.</div>
+          <ul class="plan-list"><li>1 vaga ativa por vez</li><li>Aparece na busca normal</li><li>Painel de candidatos</li></ul>
+          <button class="pay-btn" onclick="abrirModal('empresa')">Criar conta grátis</button>
         </div>
         <div class="plan-card featured">
-          <div class="plan-name">Plano Recrutador</div>
-          <div class="plan-price">R$ 249,00<small>/mês</small></div>
-          <div class="plan-desc">Vagas ilimitadas com destaque na busca.</div>
-          <ul class="plan-list"><li>Vagas ilimitadas</li><li>Destaque no topo</li><li>Cancele quando quiser</li></ul>
-          <button class="pay-btn" onclick="iniciarPagamento('empresa_premium')">Assinar com Mercado Pago</button>
+          <div class="plan-name">✦ Destaque</div>
+          <div class="plan-price">R$ 49,90<small>/vaga · 30 dias</small></div>
+          <div class="plan-desc">Sua vaga no topo da lista, com selo e mais visibilidade.</div>
+          <ul class="plan-list"><li>Tudo do Grátis, e mais:</li><li>Vaga fixada no topo da busca</li><li>Selo de vaga em destaque</li><li>Visível para candidatos Premium primeiro</li></ul>
+          <button class="pay-btn" onclick="iniciarPagamento('empresa_destaque')">Destacar vaga</button>
         </div>
       </div>
+
       <p class="mp-note">🔒 Pagamento processado com segurança pelo Mercado Pago. Você será redirecionado para concluir.</p>
     </div>
   </div>
@@ -420,12 +469,16 @@ function toggleMenu(){
 }
 
 const VAGAS = [
-  {empresa:"Fort Atacadista", cargo:"Operador(a) de Loja / Auxiliar de Padaria", cidade:"Viamão, RS", tipo:"Feirão de emprego · sem experiência", salario:"A combinar", prazo:"vagas abertas", fonte:"SuperVarejo", url:"https://www.supervarejo.com.br/Vagas%20de%20emprego/fort-atacadista-abre-vagas-de-emprego-no-rio-grande-do-sul"},
-  {empresa:"Bianchini", cargo:"Técnico de Produção Jr.", cidade:"Rio Grande, RS", tipo:"CLT · Presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Glassdoor", url:"https://www.glassdoor.com.br/Vaga/rio-grande-vagas-SRCH_IL.0,10_IC2415279.htm"},
-  {empresa:"Sagres", cargo:"Assistente Administrativo", cidade:"Rio Grande, RS", tipo:"CLT · Presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Glassdoor", url:"https://www.glassdoor.com.br/Vaga/rio-grande-vagas-SRCH_IL.0,10_IC2415279.htm"},
-  {empresa:"SIGE Cloud", cargo:"Auxiliar de Atendimento ao Cliente", cidade:"Feliz, RS", tipo:"CLT · Presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-rio-grande-do-sul-vagas.html"},
-  {empresa:"Consultoria Camilla Terra", cargo:"Consultor(a) Comercial", cidade:"Porto Alegre, RS", tipo:"CLT · Presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-rio-grande-do-sul-vagas.html"},
-  {empresa:"Grupo Servopa", cargo:"Auxiliar de Sinistro", cidade:"Porto Alegre, RS", tipo:"CLT · Presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-rio-grande-do-sul-vagas.html"},
+  {empresa:"Fort Atacadista", cargo:"Operador(a) de Loja / Auxiliar de Padaria", cidade:"Viamão, RS", tipo:"Feirão de emprego · sem experiência", modalidade:"presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"SuperVarejo", url:"https://www.supervarejo.com.br/Vagas%20de%20emprego/fort-atacadista-abre-vagas-de-emprego-no-rio-grande-do-sul"},
+  {empresa:"Bianchini", cargo:"Técnico de Produção Jr.", cidade:"Rio Grande, RS", tipo:"CLT · Presencial", modalidade:"presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Glassdoor", url:"https://www.glassdoor.com.br/Vaga/rio-grande-vagas-SRCH_IL.0,10_IC2415279.htm"},
+  {empresa:"Sagres", cargo:"Assistente Administrativo", cidade:"Rio Grande, RS", tipo:"CLT · Presencial", modalidade:"presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Glassdoor", url:"https://www.glassdoor.com.br/Vaga/rio-grande-vagas-SRCH_IL.0,10_IC2415279.htm"},
+  {empresa:"SIGE Cloud", cargo:"Auxiliar de Atendimento ao Cliente", cidade:"Feliz, RS", tipo:"CLT · Presencial", modalidade:"presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-rio-grande-do-sul-vagas.html"},
+  {empresa:"Consultoria Camilla Terra", cargo:"Consultor(a) Comercial", cidade:"Porto Alegre, RS", tipo:"CLT · Presencial", modalidade:"presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-rio-grande-do-sul-vagas.html"},
+  {empresa:"Grupo Servopa", cargo:"Auxiliar de Sinistro", cidade:"Porto Alegre, RS", tipo:"CLT · Presencial", modalidade:"presencial", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-rio-grande-do-sul-vagas.html"},
+  {empresa:"SIGE Cloud", cargo:"Analista de Suporte Técnico", cidade:"100% remoto · Brasil", tipo:"CLT · Home office", modalidade:"remoto", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-trabalho-remoto-vagas.html"},
+  {empresa:"Consultoria Camilla Terra", cargo:"SDR / Pré-vendas", cidade:"100% remoto · Brasil", tipo:"CLT · Home office", modalidade:"remoto", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-trabalho-remoto-vagas.html"},
+  {empresa:"Grupo Servopa", cargo:"Analista Financeiro Jr.", cidade:"Porto Alegre, RS", tipo:"CLT · Híbrido (2x/semana)", modalidade:"hibrido", salario:"A combinar", prazo:"vagas abertas", fonte:"Glassdoor", url:"https://www.glassdoor.com.br/Vaga/porto-alegre-vagas-SRCH_IL.0,12_IC2412742.htm"},
+  {empresa:"Bianchini", cargo:"Desenvolvedor(a) Front-end Jr.", cidade:"100% remoto · Brasil", tipo:"CLT · Home office", modalidade:"remoto", salario:"A combinar", prazo:"vagas abertas", fonte:"Indeed", url:"https://br.indeed.com/l-trabalho-remoto-vagas.html"},
 ];
 
 const CONCURSOS = [
@@ -434,11 +487,30 @@ const CONCURSOS = [
   {orgao:"Prefeitura de Travesseiro", cargo:"Assistente Social, Auxiliar de Saúde Bucal", vagas:"2 imediatas + cadastro reserva", taxa:"consultar edital", inscricaoAte:"23/07/2026", prova:"30/08/2026", fonte:"abc+", url:"https://www.abcmais.com/brasil/rio-grande-do-sul/salarios-de-ate-r-20-mil-veja-a-lista-de-concursos-publicos-com-inscricoes-abertas-no-rs/"},
 ];
 
-function badgeVaga(v){ return `<span class="badge badge-priv">Privada</span>`; }
+function badgeVaga(v){
+  return v.modalidade === "remoto"
+    ? `<span class="badge badge-remoto">🏠 Home office</span>`
+    : `<span class="badge badge-priv">Privada</span>`;
+}
+
+let filtroAtivo = "";
+
+function filtrarVagas(modalidade, btn){
+  filtroAtivo = modalidade;
+  document.querySelectorAll("#filtro-modalidade .filter-chip").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderVagas();
+}
 
 function renderVagas(){
   const grid = document.getElementById('vagas-grid');
-  grid.innerHTML = VAGAS.map((v, i) => `
+  const lista = filtroAtivo ? VAGAS.filter(v => v.modalidade === filtroAtivo) : VAGAS;
+  if(lista.length === 0){
+    grid.innerHTML = `<p style="color:var(--ink-soft); grid-column:1/-1;">Nenhuma vaga nessa modalidade agora. Volte em breve.</p>`;
+    injetarSchemaVagas();
+    return;
+  }
+  grid.innerHTML = lista.map((v, i) => `
     <div class="card">
       <div class="card-top">
         <span class="company-tag">${v.empresa.toUpperCase()}</span>
