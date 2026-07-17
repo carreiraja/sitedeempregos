@@ -591,7 +591,27 @@ function switchAudience(target, btn){
   document.getElementById('plan-' + target).classList.add('active');
 }
 
+/* =========================================================================
+   LINKS DE PAGAMENTO (modo simples, sem Edge Function)
+   Cole aqui os links gerados em: Mercado Pago → Cobranças → Link de
+   pagamento → Criar novo. Enquanto um planoId não tiver link preenchido,
+   o site tenta usar a Edge Function "criar-pagamento" (se existir).
+========================================================================= */
+const LINKS_PAGAMENTO = {
+  candidato_basico:  "https://mpago.la/1BBD3x3",  // Básico — R$ 12,90/mês
+  candidato_premium: "https://mpago.la/1U2G6Wn",  // Premium — R$ 24,90/mês
+  empresa_destaque:  "https://mpago.la/2N7UF6p"   // Destaque de vaga — R$ 49,90/30 dias
+};
+
 async function iniciarPagamento(planoId){
+  // Modo simples: se houver um link de pagamento fixo pra esse plano, usa ele
+  // direto e nem precisa do Supabase/Edge Function.
+  const linkFixo = LINKS_PAGAMENTO[planoId];
+  if (linkFixo) {
+    window.open(linkFixo, "_blank", "noopener");
+    return;
+  }
+
   if(!supabaseClient){
     alert('Configure o Supabase primeiro (SUPABASE_URL e SUPABASE_ANON_KEY).');
     return;
